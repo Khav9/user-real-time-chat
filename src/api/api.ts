@@ -209,6 +209,7 @@ interface Server {
   owner_id: string;
   created_at: string;
   updated_at: string;
+  image?: string;
 }
 
 interface ServerResponse {

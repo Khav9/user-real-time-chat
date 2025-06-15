@@ -1,36 +1,32 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import type { Message } from "@/api/api";
+// import type { Message } from "@/api/api";
 import { messagesApi } from "@/api/api";
 
 // Mock API functions - replace with your actual API calls
-const fetchMessages = async (channelId: string): Promise<Message[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
+// const fetchMessages = async (channelId: string): Promise<Message[]> => {
+//   // Simulate API delay
+//   await new Promise((resolve) => setTimeout(resolve, 300));
 
-  return [];
-};
+//   return [];
+// };
 
-const sendMessage = async (data: {
-  channelId: string;
-  content: string;
-}): Promise<Message> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 200));
+// const sendMessage = async (data: {
+//   channelId: string;
+//   content: string;
+// }): Promise<Message> => {
+//   // Simulate API delay
+//   await new Promise((resolve) => setTimeout(resolve, 200));
 
-  // Mock response
-  return {
-    id: Date.now().toString(),
-    content: data.content,
-    author: {
-      id: "current-user",
-      username: "me",
-      avatar: "/placeholder.svg?height=40&width=40",
-    },
-    timestamp: new Date().toISOString(),
-    channelId: data.channelId,
-  };
-};
+//   // Mock response
+//   return {
+//     content: data.content,
+//     created_at: new Date().toISOString(),
+//     updated_at: new Date().toISOString(),
+//     user: {
+//       username: "me",
+//     },
+//   };
+// };
 
 export function useMessages(channelId: string | null) {
   return useQuery({

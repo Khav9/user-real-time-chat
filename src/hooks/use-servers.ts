@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { serversApi } from "@/api/api";
 import { useAuth } from "@/modules/auth/hook/useAuth";
@@ -9,6 +8,7 @@ export interface Server {
   owner_id: string;
   created_at: string;
   updated_at: string;
+  image?: string;
 }
 
 export interface ServerResponse {
@@ -44,7 +44,7 @@ export function useServer(serverId: string) {
     queryKey: ["server", serverId],
     queryFn: async () => {
       const response = await serversApi.getServerDetailsById(serverId);
-      return response.data;
+      return response;
     },
     enabled: !!serverId && isAuthenticated,
     retry: false,

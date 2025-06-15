@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Hash,
   Volume2,
@@ -27,7 +27,7 @@ export function Sidebar({
   selectedChannel,
   onChannelSelect,
 }: SidebarProps) {
-  const { data: channels, isLoading } = useChannels(serverId);
+  const { data: channels } = useChannels(serverId);
   const { data: server } = useServer(serverId || "");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(["Information", "Text Channels"])
