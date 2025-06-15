@@ -82,7 +82,7 @@ class ApiClient {
 
   async put<T>(endpoint: string, data?: any): Promise<T> {
     return this.request<T>(endpoint, {
-      method: "PUT",
+      method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
@@ -109,6 +109,7 @@ export const channelsApi = {
 };
 
 export interface Message {
+  message_id: string;
   content: string;
   created_at: string;
   updated_at: string;
@@ -126,7 +127,12 @@ export const messagesApi = {
     apiClient.post<Message>(`/channels/${data.channelId}/messages`, {
       content: data.content,
     }),
-  delete: (messageId: string) => apiClient.delete(`/messages/${messageId}`),
+  edit: (data: { channelId: string; messageId: string; content: string }) =>
+    apiClient.put<Message>(`/channels/${data.channelId}/messages/${data.messageId}`, {
+      content: data.content,
+    }),
+  delete: (data: { channelId: string; messageId: string }) =>
+    apiClient.delete(`/channels/${data.channelId}/messages/${data.messageId}`),
 };
 
 // WebSocket connection for real-time updates

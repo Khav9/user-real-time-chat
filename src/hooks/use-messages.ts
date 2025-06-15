@@ -1,32 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-// import type { Message } from "@/api/api";
 import { messagesApi } from "@/api/api";
 
-// Mock API functions - replace with your actual API calls
-// const fetchMessages = async (channelId: string): Promise<Message[]> => {
-//   // Simulate API delay
-//   await new Promise((resolve) => setTimeout(resolve, 300));
-
-//   return [];
-// };
-
-// const sendMessage = async (data: {
-//   channelId: string;
-//   content: string;
-// }): Promise<Message> => {
-//   // Simulate API delay
-//   await new Promise((resolve) => setTimeout(resolve, 200));
-
-//   // Mock response
-//   return {
-//     content: data.content,
-//     created_at: new Date().toISOString(),
-//     updated_at: new Date().toISOString(),
-//     user: {
-//       username: "me",
-//     },
-//   };
-// };
+export interface Message {
+  message_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  user: {
+    username: string;
+  };
+}
 
 export function useMessages(channelId: string | null) {
   return useQuery({
@@ -62,15 +45,37 @@ export function useSendMessage() {
   });
 }
 
+export function useEditMessage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      channelId: string;
+      messageId: string;
+      content: string;
+    }) => messagesApi.edit(data),
+    onSuccess: (_, variables) => {
+      console.log("Message updated successfully, invalidating queries");
+      // Invalidate and refetch messages for this channel
+      queryClient.invalidateQueries({
+        queryKey: ["messages", variables.channelId],
+      });
+    },
+  });
+}
+
 export function useDeleteMessage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (messageId: string) => messagesApi.delete(messageId),
-    onSuccess: () => {
+    mutationFn: (data: { channelId: string; messageId: string }) =>
+      messagesApi.delete(data),
+    onSuccess: (_, variables) => {
       console.log("Message deleted successfully, invalidating queries");
-      // Invalidate all message queries since we don't know which channel the message was in
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
+      // Invalidate and refetch messages for this channel
+      queryClient.invalidateQueries({
+        queryKey: ["messages", variables.channelId],
+      });
     },
   });
 }

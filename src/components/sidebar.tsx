@@ -74,7 +74,7 @@ export function Sidebar({
                   <Button
                     variant="ghost"
                     onClick={() => toggleCategory(category)}
-                    className="w-full justify-start text-gray-400 hover:text-gray-300 p-1 h-auto text-xs font-semibold uppercase tracking-wide"
+                    className="w-full justify-start text-gray-400 p-1 h-auto text-xs font-semibold uppercase tracking-wide"
                   >
                     {expandedCategories.has(category) ? (
                       <ChevronDown className="w-3 h-3 mr-1" />
