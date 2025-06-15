@@ -11,10 +11,12 @@ import {
   Plus,
   ChevronDown,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { useChannels } from "@/hooks/use-channels";
 import { useState } from "react";
 import { useServer } from "@/hooks/use-servers";
+import { Link } from "react-router-dom";
 
 interface SidebarProps {
   serverId: string | null;
@@ -120,7 +122,7 @@ export function Sidebar({
 
       {/* User Area */}
       <div className="p-2 border-t border-gray-700">
-        <div className="flex items-center justify-between p-2 rounded hover:bg-gray-700">
+        <div className="flex items-center justify-between p-2 rounded">
           <div className="flex items-center gap-2">
             <div className="relative">
               <Avatar className="w-8 h-8">
@@ -140,24 +142,29 @@ export function Sidebar({
             <Button
               variant="ghost"
               size="sm"
-              className="w-8 h-8 p-0 text-gray-400 hover:text-white"
+              className="w-8 h-8 p-0 text-gray-400 hover:text-black"
             >
               <Mic className="w-4 h-4" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="w-8 h-8 p-0 text-gray-400 hover:text-white"
+              className="w-8 h-8 p-0 text-gray-400 hover:text-black"
             >
               <Headphones className="w-4 h-4" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="w-8 h-8 p-0 text-gray-400 hover:text-white"
+              className="w-8 h-8 p-0 text-gray-400 hover:text-black"
             >
               <Settings className="w-4 h-4" />
             </Button>
+            <Link to="/login">
+              <Button variant="destructive" size="sm" className="w-8 h-8 p-0 text-gray-400 hover:text-black">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
