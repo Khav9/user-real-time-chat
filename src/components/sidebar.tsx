@@ -16,7 +16,8 @@ import {
 import { useChannels } from "@/hooks/use-channels";
 import { useState } from "react";
 import { useServer } from "@/hooks/use-servers";
-import { Link } from "react-router-dom";
+import { useAuth } from "@/modules/auth/hook/useAuth";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   serverId: string | null;
@@ -31,9 +32,16 @@ export function Sidebar({
 }: SidebarProps) {
   const { data: channels } = useChannels(serverId);
   const { data: server } = useServer(serverId || "");
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(["Information", "Text Channels"])
   );
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   const toggleCategory = (category: string) => {
     const newExpanded = new Set(expandedCategories);
@@ -160,11 +168,14 @@ export function Sidebar({
             >
               <Settings className="w-4 h-4" />
             </Button>
-            <Link to="/login">
-              <Button variant="destructive" size="sm" className="w-8 h-8 p-0 text-gray-400 hover:text-black">
-                <LogOut className="w-4 h-4" />
-              </Button>
-            </Link>
+            <Button 
+              variant="destructive" 
+              size="sm" 
+              className="w-8 h-8 p-0 text-gray-400 hover:text-black"
+              onClick={handleLogout}
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>

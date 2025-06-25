@@ -1,12 +1,21 @@
 import Register from "@/modules/auth/page/Register";
 import Login from "@/modules/auth/page/Login";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  Navigate,
+} from "react-router-dom";
 import RootLayot from "@/RootLayot";
+import { ProtectedRoute } from "./protected";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayot />,
+    element: (
+      <ProtectedRoute>
+        <RootLayot />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/login",
@@ -15,6 +24,10 @@ const router = createBrowserRouter([
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" replace />,
   },
 ]);
 

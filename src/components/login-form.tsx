@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/modules/auth/hook/useAuth";
 import { useState } from "react";
 
@@ -12,9 +12,13 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get the redirect path from location state (set by ProtectedRoute)
+  const from = location.state?.from?.pathname || "/";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,8 +36,8 @@ export function LoginForm({
       console.log("Login result:", result);
 
       if (result.success) {
-        console.log("Login successful, navigating to home");
-        navigate("/"); // Redirect to home page after successful login
+        console.log("Login successful, navigating to:", from);
+        navigate(from, { replace: true }); // Redirect to the original page or home
       } else {
         console.error("Login failed:", result.error);
         setError("Invalid username or password");

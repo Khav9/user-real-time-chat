@@ -56,6 +56,9 @@ class ApiClient {
         if (response.status === 401) {
           // Clear token on unauthorized
           setAuthToken(null);
+          window.location.href = "/login";
+          return Promise.reject(new Error("Unauthorized"));
+          
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }

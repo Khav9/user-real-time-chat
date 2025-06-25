@@ -1,19 +1,75 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Link } from "react-router-dom"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/modules/auth/hook/useAuth";
+import { useState } from "react";
+import { apiClient } from "@/api/api";
 
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Get the redirect path from location state (set by ProtectedRoute)
+  const from = location.state?.from?.pathname || "/";
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const username = formData.get("username") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    console.log("Register form submitted:", { username, email });
+
+    try {
+      // First register the user
+      const registerResponse = await apiClient.post("/auth/register", {
+        username,
+        email,
+        password,
+      });
+
+      console.log("Registration successful:", registerResponse);
+
+      // Then automatically log them in
+      const loginResult = await login(username, password);
+
+      if (loginResult.success) {
+        console.log("Auto-login successful, navigating to:", from);
+        navigate(from, { replace: true });
+      } else {
+        console.error("Auto-login failed:", loginResult.error);
+        setError(
+          "Registration successful but login failed. Please try logging in."
+        );
+      }
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      setError(
+        err.response?.data?.message || "An error occurred during registration"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form onSubmit={handleSubmit} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome to Chat App</h1>
@@ -21,29 +77,46 @@ export function RegisterForm({
                   Register to your Chat App account
                 </p>
               </div>
+              {error && (
+                <div className="text-sm text-red-500 text-center">{error}</div>
+              )}
               <div className="grid gap-3">
                 <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
+                  name="username"
                   type="text"
                   placeholder="username"
                   required
+                  disabled={isLoading}
                 />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="email">Email</Label>
                 </div>
-                <Input id="email" type="email" required />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  disabled={isLoading}
+                />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  disabled={isLoading}
+                />
               </div>
-              <Button type="submit" className="w-full">
-                Register
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Creating account..." : "Register"}
               </Button>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
@@ -101,5 +174,5 @@ export function RegisterForm({
         and <a href="#">Privacy Policy</a>.
       </div>
     </div>
-  )
+  );
 }
