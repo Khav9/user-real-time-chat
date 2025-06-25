@@ -1,7 +1,8 @@
 // API Configuration and Best Practices
 
 export const API_BASE_URL =
-  import.meta.env.PUBLIC_API_URL || "https://real-time-chat-ptfl.onrender.com";
+  import.meta.env.PUBLIC_API_URL || "http://localhost:3001";
+// import.meta.env.PUBLIC_API_URL || "https://real-time-chat-ptfl.onrender.com";
 
 // Store token in memory
 let memoryToken: string | null = null;
@@ -58,7 +59,6 @@ class ApiClient {
           setAuthToken(null);
           window.location.href = "/login";
           return Promise.reject(new Error("Unauthorized"));
-          
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -131,9 +131,12 @@ export const messagesApi = {
       content: data.content,
     }),
   edit: (data: { channelId: string; messageId: string; content: string }) =>
-    apiClient.put<Message>(`/channels/${data.channelId}/messages/${data.messageId}`, {
-      content: data.content,
-    }),
+    apiClient.put<Message>(
+      `/channels/${data.channelId}/messages/${data.messageId}`,
+      {
+        content: data.content,
+      }
+    ),
   delete: (data: { channelId: string; messageId: string }) =>
     apiClient.delete(`/channels/${data.channelId}/messages/${data.messageId}`),
 };
@@ -212,6 +215,14 @@ export interface Channel {
   updated_at: string;
 }
 
+export interface User {
+  user_id: string;
+  username: string;
+  email: string;
+  created_at: string;
+  updated_at: string;
+}
+
 interface Server {
   server_id: string;
   name: string;
@@ -254,5 +265,24 @@ export const serversApi = {
       throw new Error("Authentication required to delete server");
     }
     return apiClient.delete(`/servers/${id}`);
+  },
+};
+
+// User profile API
+export const userApi = {
+  getProfile: () => {
+    if (!memoryToken) {
+      throw new Error("Authentication required to fetch user profile");
+    }
+    return apiClient.get<User>("/auth/profile").catch((error) => {
+      console.error("Failed to fetch user profile:", error);
+      if (error.message === "Unauthorized") {
+        // Clear token on unauthorized
+        setAuthToken(null);
+        sessionStorage.removeItem("auth_token");
+        window.location.href = "/login";
+      }
+      throw error;
+    });
   },
 };

@@ -32,7 +32,7 @@ export function Sidebar({
 }: SidebarProps) {
   const { data: channels } = useChannels(serverId);
   const { data: server } = useServer(serverId || "");
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(["Information", "Text Channels"])
@@ -136,13 +136,15 @@ export function Sidebar({
               <Avatar className="w-8 h-8">
                 <AvatarImage src="/placeholder.svg?height=32&width=32" />
                 <AvatarFallback className="bg-indigo-600 text-white text-sm">
-                  M
+                  {user?.username?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800" />
             </div>
             <div>
-              <div className="text-white text-sm font-medium">me</div>
+              <div className="text-white text-sm font-medium">
+                {user?.username || "Loading..."}
+              </div>
               <div className="text-gray-400 text-xs">Online</div>
             </div>
           </div>
