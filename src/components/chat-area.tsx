@@ -23,6 +23,7 @@ import { MessageInput } from "@/components/message-input";
 import { format } from "date-fns";
 import { MobileNav } from "@/components/mobile-nav";
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/modules/auth/hook/useAuth";
 
 import {
   ContextMenu,
@@ -79,8 +80,7 @@ export function ChatArea({
   const [editingMessage, setEditingMessage] = useState<EditingMessage | null>(
     null
   );
-  // TODO: Replace with actual user ID from your auth system
-  const currentUserId = "current-user-123";
+  const { user: currentUser } = useAuth();
 
   const emojis = ["👍", "❤️", "😂", "😮", "😢", "😡"];
 
@@ -93,10 +93,10 @@ export function ChatArea({
       const updatedReactions = messageReactions
         .map((reaction) => ({
           ...reaction,
-          count: reaction.users.includes(currentUserId)
+          count: reaction.users.includes(currentUser?.username || "")
             ? reaction.count - 1
             : reaction.count,
-          users: reaction.users.filter((id) => id !== currentUserId),
+          users: reaction.users.filter((id) => id !== currentUser?.username),
         }))
         .filter((r) => r.count > 0);
 
@@ -110,7 +110,7 @@ export function ChatArea({
               ? {
                   ...r,
                   count: r.count + 1,
-                  users: [...r.users, currentUserId],
+                  users: [...r.users, currentUser?.username || ""],
                 }
               : r
           ),
@@ -124,7 +124,7 @@ export function ChatArea({
             {
               emoji,
               count: 1,
-              users: [currentUserId],
+              users: [currentUser?.username || ""],
             },
           ],
         };
@@ -337,7 +337,7 @@ export function ChatArea({
                                 )
                               }
                               className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-sm transition-colors ${
-                                reaction.users.includes(currentUserId)
+                                reaction.users.includes(currentUser?.username || "")
                                   ? "bg-gray-100 hover:bg-gray-200"
                                   : "bg-gray-800/50 hover:bg-gray-800"
                               }`}
@@ -354,30 +354,38 @@ export function ChatArea({
                   </div>
                   {/* Context Menu */}
                   <ContextMenuContent className="w-52">
-                    <ContextMenuItem
-                      inset
-                      className="cursor-pointer"
-                      onClick={() =>
-                        handleEditClick(message.message_id, message.content)
-                      }
-                    >
-                      Edit
-                      <ContextMenuShortcut>
-                        <Pencil className="w-4 h-4" />
-                      </ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem
-                      inset
-                      className="cursor-pointer"
-                      onClick={() => handleDeleteMessage(message.message_id)}
-                    >
-                      <span className="text-red-500/50 group-hover:text-red-500">
-                        Delete
-                      </span>
-                      <ContextMenuShortcut className="text-red-500/50 hover:text-red-500">
-                        <Trash className="w-4 h-4" />
-                      </ContextMenuShortcut>
-                    </ContextMenuItem>
+                    {currentUser &&
+                      message.user.username === currentUser.username && (
+                        <ContextMenuItem
+                          inset
+                          className="cursor-pointer"
+                          onClick={() =>
+                            handleEditClick(message.message_id, message.content)
+                          }
+                        >
+                          Edit
+                          <ContextMenuShortcut>
+                            <Pencil className="w-4 h-4" />
+                          </ContextMenuShortcut>
+                        </ContextMenuItem>
+                      )}
+                    {currentUser &&
+                      message.user.username === currentUser.username && (
+                        <ContextMenuItem
+                          inset
+                          className="cursor-pointer"
+                          onClick={() =>
+                            handleDeleteMessage(message.message_id)
+                          }
+                        >
+                          <span className="text-red-500/50 group-hover:text-red-500">
+                            Delete
+                          </span>
+                          <ContextMenuShortcut className="text-red-500/50 hover:text-red-500">
+                            <Trash className="w-4 h-4" />
+                          </ContextMenuShortcut>
+                        </ContextMenuItem>
+                      )}
                     <ContextMenuItem inset className="cursor-pointer">
                       Save
                       <ContextMenuShortcut>
