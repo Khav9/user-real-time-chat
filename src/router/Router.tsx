@@ -18,6 +18,30 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/servers/:serverId",
+    element: (
+      <ProtectedRoute>
+        <RootLayot />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/servers/:serverId/channels/:channelId",
+    element: (
+      <ProtectedRoute>
+        <RootLayot />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/servers/:serverId/channels/:channelId/messages/:messageId",
+    element: (
+      <ProtectedRoute>
+        <RootLayot />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/login",
     element: <Login />,
   },

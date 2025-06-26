@@ -29,11 +29,24 @@ const initializeToken = () => {
 initializeToken();
 
 export function useAuth() {
-  const [authState, setAuthState] = useState<AuthState>(() => ({
-    isAuthenticated: !!memoryToken,
-    token: memoryToken,
-    user: memoryUser,
-  }));
+  const [authState, setAuthState] = useState<AuthState>(() => {
+    // Initialize with sessionStorage token immediately
+    const storedToken = sessionStorage.getItem("auth_token");
+    if (storedToken) {
+      memoryToken = storedToken;
+      setAuthToken(storedToken);
+      return {
+        isAuthenticated: true,
+        token: storedToken,
+        user: memoryUser,
+      };
+    }
+    return {
+      isAuthenticated: !!memoryToken,
+      token: memoryToken,
+      user: memoryUser,
+    };
+  });
 
   const queryClient = useQueryClient();
 
