@@ -1,8 +1,8 @@
 // API Configuration and Best Practices
 
 export const API_BASE_URL =
-  import.meta.env.PUBLIC_API_URL || "http://localhost:3001";
-// import.meta.env.PUBLIC_API_URL || "https://real-time-chat-ptfl.onrender.com";
+  // import.meta.env.PUBLIC_API_URL || "http://localhost:3001";
+import.meta.env.PUBLIC_API_URL || "https://real-time-chat-ptfl.onrender.com";
 
 // Store token in memory
 let memoryToken: string | null = null;
